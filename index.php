@@ -50,6 +50,7 @@ require_once("appId_secretKey.php");
             <!-- ----------------------- login message --------------------------------------  -->
             <div id="loginMsg" ></div>
             <div id="logoutMsg"></div>
+            <div id="data"></div>
             <div id="clickToConnect" class="">
                 <button class="btn btn-block btn btn-info" type="button" id='facebookLoginButton'>Click to Connect Facebook</button>
             </div>

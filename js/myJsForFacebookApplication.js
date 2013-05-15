@@ -38,13 +38,13 @@ $(document).ready(function(){ //when the document is ready ..
         js.src = "//connect.facebook.net/en_US/all.js";
         ref.parentNode.insertBefore(js, ref);
     }(document));
-
+    var accessToken='';
     // jquery to Authanticate User with app by asking for emailid and password 
-
     $("#facebookLoginButton").click(function() {
         FB.login(function(response) {
             if (response.authResponse) {
                 facebookAuthorizationResponse=response;
+                accessToken=response.authResponse.accessToken;
                 //Set Accesstoken of user in session
                 $.ajax({
                     url: 'someFacebookFunction.php',
@@ -75,6 +75,7 @@ $(document).ready(function(){ //when the document is ready ..
                 FB.api('/me/albums', showAlbums);
                 
             } else {
+                alert("Not connected to Network !!");
             }
         }, {
             scope: 'email,user_photos'
@@ -127,7 +128,8 @@ $(document).ready(function(){ //when the document is ready ..
                 // if user doesn't  has pictures ..
                 if (!response.picture) {
                     if(value.count)
-                        $('#coverphoto' + key).attr("src",'http://www.thesirenssound.com/wp-content/uploads/2009/03/No-Cover.jpg');//hidding the album cover photo's
+                        $('#coverphoto' + key).attr("src",'img/No-Cover.jpg');
+                    //hidding the album cover photo's
                     else
                         $('#albumCoverPhoto' + key).hide();
                 } 
@@ -151,10 +153,10 @@ $(document).ready(function(){ //when the document is ready ..
         });
     }
     //get all photos for an album and hide the album view
-
     function show_albums_photos(album_id) {
         $('#loading').show(); //showing the loading image ..
         FB.api('/' + album_id + '/photos', function(response) {
+            
             photosInsideAlbums='';
             $('#photoInsideAlbum').html(photosInsideAlbums);
             photosInsideAlbums+='<div class="camera_wrap camera_azure_skin pattern_1" id="camera_wrap_1">';
@@ -226,30 +228,28 @@ $(document).ready(function(){ //when the document is ready ..
         $('#clickToDisconnect').show();// hiding the list of albums
         $('#loading').hide(); //showing the loading image ..
     });
-    $('#downloadImage').click(function(){
-        alert('Here I am ');
-    });
-    
+    //photosCounter.serializeArray();
     function downloadAlbum(album_id,name){
         var id=album_id;
         var album_name=name;
-        alert(id+" "+name);
-        var request=
-        $.ajax({ //Ajax call to download script to get the photos and zip them
+        window.location = "album.php?id="+ album_id+"&access="+accessToken;
+    //self.location='download_new.php';
+    //alert(id+" "+name);
+    /*var request=$.ajax({ //Ajax call to download script to get the photos and zip them
             type: "POST",
             data: {
-                id:album_id,
-                name:album_name,
-                type:'download'
+                id: album_id,
+                name: album_name,
+                type: 'download'
             },
             url: "album.php",
             success: function(){
-                self.location='download_new.php?name='+name 
-                //On Completion of Zipping all the files, Request for headers to prompt user for download
+                self.location='download_new.php'
+            //On Completion of Zipping all the files, Request for headers to prompt user for download
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 return false;
             }
-        }); 
+        });*/
     }
 });// document ready ends ..
