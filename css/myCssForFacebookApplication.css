@@ -25,10 +25,8 @@ body {
     margin-bottom: 1%;
     height: 350px;
 }
-#loading{
-
+#loading,#loadingForDownload{
     position:  fixed;
-
 }
 #load{
     -o-border-radius: 5px 5px 5px 5px;

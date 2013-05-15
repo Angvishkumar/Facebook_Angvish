@@ -232,24 +232,30 @@ $(document).ready(function(){ //when the document is ready ..
     function downloadAlbum(album_id,name){
         var id=album_id;
         var album_name=name;
-        window.location = "album.php?id="+ album_id+"&access="+accessToken;
-    //self.location='download_new.php';
-    //alert(id+" "+name);
-    /*var request=$.ajax({ //Ajax call to download script to get the photos and zip them
+        //window.location = "album.php?id="+ album_id+"&access="+accessToken+"&name="+name;
+        //self.location='download_new.php';
+        //alert(id+" "+name);
+        var loadingForDownload='<div class="well"><img class="well" id="" src="img/loading.gif">';
+        loadingForDownload+='<div class="progress progress-success progress-striped active">';
+        loadingForDownload+='<div class="bar" style="width: 99%"></div>';
+        loadingForDownload+='</div></div>';
+        $('#loadingForDownload').html(loadingForDownload).show(); //showing the loading image ..
+        var request=$.ajax({ //Ajax call to download script to get the photos and zip them
             type: "POST",
             data: {
                 id: album_id,
                 name: album_name,
-                type: 'download'
+                access: accessToken
             },
             url: "album.php",
             success: function(){
-                self.location='download_new.php'
+                $('#loadingForDownload').delay(1000).slideUp("slow").html(''); //hiding the loading image ..
+                //self.location='download_new.php'
             //On Completion of Zipping all the files, Request for headers to prompt user for download
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 return false;
             }
-        });*/
+        });
     }
 });// document ready ends ..
