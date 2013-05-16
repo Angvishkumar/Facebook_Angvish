@@ -235,10 +235,13 @@ $(document).ready(function(){ //when the document is ready ..
         //window.location = "album.php?id="+ album_id+"&access="+accessToken+"&name="+name;
         //self.location='download_new.php';
         //alert(id+" "+name);
-        var loadingForDownload='<div class="well"><img class="well" id="" src="img/loading.gif">';
-        loadingForDownload+='<div class="progress progress-success progress-striped active">';
-        loadingForDownload+='<div class="bar" style="width: 99%"></div>';
-        loadingForDownload+='</div></div>';
+        var loadingForDownload='<div class="well">';
+        loadingForDownload+='<p><h3>Thanks for Clicking !!<h3></p>';
+        loadingForDownload+='<p><h3><strong>Your '+album_name+' will be downloaded in a while, Please wait..<strong><h3></p>';
+        loadingForDownload+='<div id="showDownload"><div class="meter">';
+        loadingForDownload+='<span style="width: 75%"></span></div>';
+        loadingForDownload+='<div class="well"><button id="clickToDownload" name="filter" class="disabled btn btn-large btn-block btn-info">';
+        loadingForDownload+='Click to Download" </button></div></div>';
         $('#loadingForDownload').html(loadingForDownload).show(); //showing the loading image ..
         var request=$.ajax({ //Ajax call to download script to get the photos and zip them
             type: "POST",
@@ -249,9 +252,22 @@ $(document).ready(function(){ //when the document is ready ..
             },
             url: "album.php",
             success: function(){
-                $('#loadingForDownload').delay(1000).slideUp("slow").html(''); //hiding the loading image ..
+                var showDownload='<div class="meter">';
+                showDownload+='<span style="width: 100%"></span>';
+                showDownload+='</div><div class="well">';
+                showDownload+='<button id="clickToDownload" name="filter" class="btn btn-large btn-block btn-info">';
+                showDownload+='Click to Download" </button></div>'
+                $('#showDownload').html(showDownload);
+                $('#clickToDownload').click(function(){
+                    //On Completion of Zipping all the files, Request for headers to prompt user for download
+                    $.ajax({
+                        url: "download_new.php",
+                        success: function(data){
+                            $('#loadingForDownload').delay(1000).slideUp("slow").html(''); //hiding the loading image ..
+                        }
+                    });
                 //self.location='download_new.php'
-            //On Completion of Zipping all the files, Request for headers to prompt user for download
+                });                
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 return false;

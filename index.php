@@ -8,6 +8,7 @@ require_once("appId_secretKey.php");
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Facebook Album Viewer</title>
+        <link href="css/meter.css" rel="stylesheet">
         <link href="css/bootstrap-modal.css" rel="stylesheet">
         <link href="css/bootstrap-responsive.css" rel="stylesheet">
         <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
@@ -34,14 +35,7 @@ require_once("appId_secretKey.php");
         <script type='text/javascript' src='js/jquery.mobile.customized.min.js'></script>
         <script type='text/javascript' src='js/jquery.easing.1.3.js'></script> 
         <script type='text/javascript' src='js/camera.min.js'></script> 
-        <script>
-            function openDialog() {
-                Avgrund.show( "#default-popup" );
-            }
-            function closeDialog() {
-                Avgrund.hide();
-            }
-        </script>
+        
     </head>
     <body>
         <!-- ----------------------- logout button .. ---------------------------------------- -->
