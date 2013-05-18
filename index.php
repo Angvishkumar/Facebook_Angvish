@@ -26,7 +26,8 @@ require_once("appId_secretKey.php");
         <script src="js/bootstrap.js" type="text/javascript"></script>
         <script src="js/bootstrap.min.js" type="text/javascript"></script>
         <script src="js/bootstrap-modalmanager.js" type ="text/javascript"></script>
-        <script src="js/" type ="text/javascript"></script>
+        <script src="js/tooltip.js" type ="text/javascript"></script>
+        <script src="js/popover.js" type ="text/javascript"></script>
 
         <link rel="stylesheet" href="css/colorbox.css" />
         <script src="js/jquery.colorbox.js"></script>
@@ -35,28 +36,32 @@ require_once("appId_secretKey.php");
         <script type='text/javascript' src='js/jquery.mobile.customized.min.js'></script>
         <script type='text/javascript' src='js/jquery.easing.1.3.js'></script> 
         <script type='text/javascript' src='js/camera.min.js'></script> 
-        
+
     </head>
     <body>
         <!-- ----------------------- logout button .. ---------------------------------------- -->
         <div class="" align="">
             <div id="clickToDisconnect" class="">
-                <img id="facebookLogoutButton" class="img-circle img-polaroid" src="img/logout.jpg"></img>
-                <!--button class="btn btn-block btn btn-warning" type="button" id='facebookLogoutButton'>Logout</button-->
+                <img id="facebookLogoutButton" class="img-circle img-polaroid"
+                     rel="popover" data-content="Click to Logout"
+                     data-original-title="Logout" src="img/logout.jpg"></img>
             </div>
         </div>
         <!-- ----------------------- developer github link ------------------------------------ -->
         <div class="container" align="center">
-            <div id="mainLabel" >
-                <a class="coderAndMakers" href="https://github.com/angvishkumar">Facebook Album Viewer & Download</a>
-            </div>
-            <!-- ----------------------- button thats  connects to facebook .. -------------------- -->
+            <div id="mainLabel">
+                <button class="btn btn-large btn-block btn-primary" type="button">
+                    <a class="coderAndMakers" href="https://github.com/angvishkumar">Facebook Album Viewer & Download - Fork the Developer</a>
+                </button>
+                </span>
+            </div>            
             <!-- ----------------------- login message --------------------------------------  -->
             <div id="loginMsg" ></div>
             <div id="logoutMsg"></div>
-            <div id="data"></div>
+            <!-- ----------------------- button thats  connects to facebook .. -------------------- -->
             <div id="clickToConnect" class="">
-                <button class="btn btn-block btn btn-info" type="button" id='facebookLoginButton'>Click to Connect Facebook</button>
+                <img rel="popover" data-content="Click to Login"
+                     data-original-title="Login" id='facebookLoginButton' src="img/connect.jpg"/>
             </div>
             <!-- ----------------- loading image while the facebook is sending data .. ---------------- -->
             <div align="center" class="container" id="loading"><img class="well" id='load' src="img/loading.gif"></div>
@@ -85,9 +90,6 @@ require_once("appId_secretKey.php");
         <div class="fluid_container container">
             <!-- ------------------- LIst of All the Images inside the Album -------------------------  -->
             <div id="photoInsideAlbum"></div>
-            <!-- div class="camera_wrap camera_emboss" id="images">
-                <div id="photoImage"></div>
-            </div -->
         </div>
     </body>
 </html>

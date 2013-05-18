@@ -51,10 +51,13 @@ if (!empty($album_photos)) {
     $_SESSION['files'] = array();
     $zip = new ZipArchive();
     $zipname = "Facebook_albums.zip";
+    if (file_exists($zipname)) {
+        unlink($zipname);
+    }
     # create a temp file & open it
     $zip->open($zipname, ZipArchive::CREATE);
     # loop through each file
-    $counter = 0;
+    $counter = 1;
     foreach ($photos as $photo) {
         $ch = curl_init($photo['src_big']);
         //creating individual image name of the each image

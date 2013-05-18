@@ -7,7 +7,6 @@ header("Pragma: no-cache");
 header("Expires: 0");
 readfile("Facebook_albums.zip");
 exit;
-unlink("Facebook_albums.zip");
 /* header('Content-Description: File Transfer');
   header('Content-Type: application/zip');
   header("Content-Type: application/force-download");
