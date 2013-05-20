@@ -19,7 +19,7 @@ if (!isset($_SERVER['HTTP'])) {
 $file_name = basename($url);
 $file_url = dirname($url) . '/' . $file_name;
 header('Content-Type: application/octet-stream');
-header("Content-Transfer-Encoding: Binary");
-header("Content-disposition: attachment; filename=\"facebook_Image.jpg\"");
+header("Content-Transfer-Encoding: Binary");	
+header('Content-Disposition: attachment; filename="Facebook_albums.jpg"');
 readfile($file_url);
 ?>

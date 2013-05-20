@@ -19,7 +19,7 @@ $(document).ready(function(){ //when the document is ready ..
     });
     // click to goto github
     $("#mainLabel").popover({
-        title: '<b>Clickout the Developer</b>', 
+        title: '<b>Checkout the Developer</b>', 
         content: '<img src="img/github.jpg" />', 
         placement: 'bottom',
         html:true
@@ -95,7 +95,7 @@ $(document).ready(function(){ //when the document is ready ..
                 FB.api('/me?fields=picture,name',function(respo){
                     displayNameAndImage+='<h3 id="displayUserName"><button class="btn btn-large btn-success btn-block" type="button"><a href="https://www.facebook.com/">';
                     displayNameAndImage+='<span class="label label-inverse"><img class="img-circle img-polaroid" src="'+respo.picture.data.url+'"></img></span>';
-                    displayNameAndImage+='<strong><b><i id="userName"> '+respo.name+"</b></i></strong></a></button></h3>";
+                    displayNameAndImage+='<strong> '+respo.name+"</strong></a></button></h3>";
                     $("#displayName").html(displayNameAndImage).show();// display the current user name ..
                     $("#userName").popover({
                         title: '<strong>'+respo.name+'</strong>', 
@@ -109,7 +109,7 @@ $(document).ready(function(){ //when the document is ready ..
                 FB.api('/me/albums', showAlbums);
                 
             } else {
-                alert("Not connected to Network !!");
+                alert("Please Enter Email/Password to login !!");
             }
         }, {
             scope: 'email,user_photos'
@@ -208,19 +208,18 @@ $(document).ready(function(){ //when the document is ready ..
     //get all photos for an album and hide the album view
     function show_albums_photos(album_id) {
         $('#loading').show(); //showing the loading image ..
+       
         FB.api('/' + album_id + '/photos', function(response) {
             
             photosInsideAlbums='';
             $('#photoInsideAlbum').html(photosInsideAlbums);
             photosInsideAlbums+='<div class="camera_wrap camera_azure_skin pattern_1" id="camera_wrap_4">';
             $.each(response.data, function(key, value) {
-                photosInsideAlbums+='<div class="imageSize" data-src="'+value.source+'" data-thumb="'+value.picture+'" >';
+                photosInsideAlbums+='<div class="imageSize" data-portrait="'+value.picture+'" data-src="'+value.source+'" data-thumb="'+value.picture+'" >';
                 //alert('href="../someFacebookFunction.php?downloadImage='+value.source+'"');
                 if(value.name==null){
                     photosInsideAlbums+='<div class="camera_caption moveFromLeft">No tags found .. &nbsp&nbsp&nbsp&nbsp&nbsp';
                     photosInsideAlbums+='<a id="pageLink" href="'+value.link+'">Go To page</a>';
-                    photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp<div id="downloadImage" class="btn btn-info" value="DownLoad this Photo">';
-                    photosInsideAlbums+='<a href="downloadImage.php?downloadImage='+value.source+'"  target="_blank">DownLoad this Photo</a></div>';
                     photosInsideAlbums+='</div>';// camera fade from bottom ends ..
                 //$('#downloadImage').attr("href",value.source);
                 }
@@ -228,25 +227,25 @@ $(document).ready(function(){ //when the document is ready ..
                 {
                     photosInsideAlbums+='<div class="camera_caption moveFromLeft">'+value.name+'&nbsp&nbsp&nbsp&nbsp&nbsp';
                     photosInsideAlbums+='<a id="pageLink" href="'+value.link+'">Go To page</a>';
-                    photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp<div id="downloadImage" class="btn btn-info" value="DownLoad this Photo">';
-                    photosInsideAlbums+='<a href="downloadImage.php?downloadImage='+value.source+'"  target="_blank">DownLoad this Photo</a></div>';
                     photosInsideAlbums+='</div>';// camera fade from bottom ends ..
                 //$('#downloadImage').attr("href",value.source);
                 }
                 photosInsideAlbums+='</div>';
             });
             photosInsideAlbums+='</div>';
+            $("body").fadeIn('slow').css("background-image","none").css('background-color', '#00334C');//showing a background image
             $('#photoInsideAlbum').append(photosInsideAlbums);
             jQuery(function(){
                 jQuery('#camera_wrap_4').camera({
-                    height: '44%',
-                    pagination: true,
-                    thumbnails: true,
+                    height: 'auto',
+                    pagination: false,
+                    thumbnails: false,
                     hover: false,
                     opacityOnGrid: false,
                     imagePath: 'https://fbcdn-photos-g-a.akamaihd.net/'
                 });
-            })
+            });
+            
             $('#mainLabel').hide();
             $('#clickToDisconnect').hide();// hiding the logout button
             $('#containgAlbumCover').hide();// hiding the list of albums
@@ -273,7 +272,7 @@ $(document).ready(function(){ //when the document is ready ..
     });
     //this is the jquery for going back to the main list of album page ..
     $('#backAndDownloadButton').click(function(){
-        
+        $("body").css("background-image","url('img/texture.jpg')");//showing a background image
         $('#toBackAndDownloadButton').hide();
         $('#mainLabel').show();
         $('#loading').show(); //showing the loading image ..
@@ -298,7 +297,7 @@ $(document).ready(function(){ //when the document is ready ..
                 loadingForDownload+='<div id="showDownload"><div class="progress progress-striped active">';
                 loadingForDownload+='<div class="bar" style="width: '+count+'%;"></div></div>';
                 loadingForDownload+='<div class="">';
-                loadingForDownload+='<strong> ( Building the zip- '+count+' % Compeleted ) </strong>';
+                loadingForDownload+='<strong> ( Building the zip - '+count+' % Compeleted ) </strong>';
                 loadingForDownload+='<button id="clickToDownload" name="filter" class="disabled btn btn-large btn-info" data-loading-text="Downloading..">';
                 loadingForDownload+='Click to Download</button>';
                 loadingForDownload+='</div></div>';
