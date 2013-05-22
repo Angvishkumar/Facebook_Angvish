@@ -67,7 +67,7 @@ require_once("appId_secretKey.php");
                         <!-- ----------------- loading image while the facebook is sending data .. ---------------- -->
                         <div align="" class="span11" id="loading"><img class="well" id='load' src="img/loading.gif"></div>
                         <!-- ----------------- loading image while the facebook is sending data .. ---------------- -->
-                        <div align="center" class="" id="loadingForDownload"></div>
+                        <div align="center" class="span11" id="loadingForDownload"></div>
                     </div><!-- mainLabel loginMsg logMsg clickToConnect loading loadingForDownload -->
                     <!-- -------------------------- User Album View -----------------------------------  -->
                     <div class="" id="containgAlbumCover" style="display:none">

@@ -2,6 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
+var albumCounter=0;
 $(document).ready(function(){ //when the document is ready ..
     $('#clickToDisconnect').hide();// hide the logout button when the document is ready ..
     $('#loading').hide();// hide the loading image when the document is ready ..
@@ -67,6 +69,7 @@ $(document).ready(function(){ //when the document is ready ..
         js.src = "//connect.facebook.net/en_US/all.js";
         ref.parentNode.insertBefore(js, ref);
     }(document));
+    
     var accessToken='';
     // jquery to Authanticate User with app by asking for emailid and password 
     $("#facebookLoginButton").click(function() {
@@ -125,8 +128,7 @@ $(document).ready(function(){ //when the document is ready ..
             //create html structure
             var albumHtmlAppend='';
             photosInsideAlbums='';
-            //$('#userAlbums').html(albumHtmlAppend);
-            //document.getElementById("userAlbums").value="";
+            albumCounter++;
             $('#photoInsideAlbum').html(photosInsideAlbums);
             albumHtmlAppend += '<div id="albumCoverPhoto' + key + '" class="span3"> ';// album cover photos div
             albumHtmlAppend+='<a href="#" class="albumCoverPhotolink' + key + '">';// allowing to click on album cover photos links
@@ -285,24 +287,27 @@ $(document).ready(function(){ //when the document is ready ..
     function downloadAlbum(album_id,name){
         var id=album_id;
         var album_name=name;
-        //window.location = "album.php?id="+ album_id+"&access="+accessToken+"&name="+name;
-        //self.location='download_new.php';
-        //alert(id+" "+name);
-        var count=0;
+        //window.location.href = "zipAlbum.php?id="+ album_id+"&access="+accessToken+"&name="+name;
+        var key=this.albumCounter;
+        for(var i=0;i< this.albumCounter;i++)
+            $('#downloadThisAlbum'+i).hide().animate({
+                opacity: 0
+            }, 1000).popover('disable');
+        var count=0.0;
         setInterval(function() {
-            if(count!=100){
+            if(count!=100.00){
                 var loadingForDownload='<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button>';
-                loadingForDownload+='<p><h3>Thanks for Clicking !!<h3></p>';
-                loadingForDownload+='<p><h3>--<strong>'+album_name+'--</strong></h3>will be downloaded in a while, Please wait..</p>';
-                loadingForDownload+='<div id="showDownload"><div class="progress progress-striped active">';
+                loadingForDownload+='<div class="well"><p><h3>Thanks for Clicking !!<h3></p></div>';
+                loadingForDownload+='<p><h3>-- <strong>'+album_name+' --</strong></h3>will be downloaded in a while, Please wait..</p>';
+                loadingForDownload+='<div id="showDownload"><div class="well progress progress-striped active">';
                 loadingForDownload+='<div class="bar" style="width: '+count+'%;"></div></div>';
                 loadingForDownload+='<div class="">';
-                loadingForDownload+='<strong> ( Building the zip - '+count+' % Compeleted ) </strong>';
-                loadingForDownload+='<button id="clickToDownload" name="filter" class="disabled btn btn-large btn-info" data-loading-text="Downloading..">';
+                loadingForDownload+='<strong> ( Building the zip - '+Math.round(count)+' % Compeleted ) </strong>';
+                loadingForDownload+='<button id="clickToDownload" name="filter" class="disabled btn btn-large" data-loading-text="Downloading..">';
                 loadingForDownload+='Click to Download</button>';
                 loadingForDownload+='</div></div>';
                 $('#loadingForDownload').html(loadingForDownload).show(); //showing the loading image ..
-                count++;
+                count=count+5.0;
             }
         }, 100);
         // cancel all the images
@@ -317,22 +322,28 @@ $(document).ready(function(){ //when the document is ready ..
             url: "zipAlbum.php",
             success: function(){
                 count=100;
-                var showDownload='<div class="progress progress-success progress-striped">';
+                var showDownload='<div class="well progress progress-success progress-striped">';
                 showDownload+='<div class="bar" style="width: 100%;"></div>';
                 showDownload+='</div><div class="">';
-                showDownload+='<strong> ( Building the zip- '+count+' % Compeleted ) </strong>';
+                showDownload+='<strong> ( Building the zip- '+Math.round(count)+' % Compeleted ) </strong>';
                 showDownload+='<button id="clickToDownload" name="filter" class="btn btn-large btn-success" data-loading-text="Downloading..">';
                 showDownload+='Click to Download</button>';
                 showDownload+='</div>'
                 $('#showDownload').html(showDownload);
                 $('#clickToDownload').click(function(){
-                    //On Completion of Zipping all the files, Request for headers to prompt user for download
-                    $.ajax({
+                    window.location.href="downloadZip.php?id="+id;//?name"+album_name;                    
+                    $('#loadingForDownload').delay(1000).slideUp("slow").html(''); //hiding the loading image ..
+                    for(var j=0;j< key;j++)
+                        $('#downloadThisAlbum'+j).show().animate({
+                            opacity: 1
+                        }, 1000).popover('enable');
+                //On Completion of Zipping all the files, Request for headers to prompt user for download
+                /*$.ajax({
                         url: "downloadZip.php",
                         success: function(data){
                             $('#loadingForDownload').delay(1000).slideUp("slow").html(''); //hiding the loading image ..
                         }
-                    });
+                    });*/
                 });                
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){

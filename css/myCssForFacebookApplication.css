@@ -103,8 +103,6 @@ body {
 }
 /* css ends for camera slider*/
 .imgcover{
-    height: 170px;
-    width: 200px;
     border:10px solid #3b5999;
 
     -moz-border-radius: 5px;

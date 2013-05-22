@@ -1,58 +1,5 @@
 <?php
 
-$downloadingAlbumId = $_POST['id'];
-$albumName = $_POST['name'];
-$access_token = $_POST['access'];
-
-/*
-  $downloadingAlbumId = $_GET['id'];
-  $albumName = $_GET['name'];
-  $access_token = $_GET['access']; */
-
-
-if (!isset($downloadingAlbumId))
-    die("No direct access allowed!");
-//echo $_GET['id'];
-require 'facebookSourceSDK/facebook.php';
-$facebook = new Facebook(array(
-            'appId' => '188240594648676',
-            'secret' => '91058469a55393ba009979d81ccd9527',
-            'cookie' => true,
-        ));
-$params = array();
-$params['fields'] = 'name,source,images';
-$params = http_build_query($params, null, '&');
-
-$user_id = $facebook->getUser();
-$facebook->setAccessToken($access_token);
-$fql = "SELECT pid,aid,src_big,src, link, owner
-FROM photo
-WHERE aid in(select  aid from album where object_id=" . $downloadingAlbumId . ");";
-$album_photos = $facebook->api(array(
-    'method' => 'fql.query',
-    'query' => $fql,
-        ));
-// Photos for the corresponding album id are accessed with their name, source and photo itself
-$photos = array();
-
-if (!empty($album_photos)) {
-    foreach ($album_photos as $photo) {
-        $temp = array();
-        //$temp['pid'] = $photo['pid'];
-        //$temp['aid'] = (isset($photo['aid'])) ? $photo['aid'] : '';
-        $temp['src'] = $photo['src'];
-        //echo '<img src="' . $temp['src_big'] . '">';
-//echo '<img src="'.$temp['src_big'].'" /> ';
-        $photos[] = $temp;
-    }
-}
-//print_r($photos);
-if (!empty($photos)) {
-    echo '<br/>photos are not empty Total of ' . count($photos);
-    create_zip($photos);
-    //header('location: downloadZip.php?id=' . $downloadingAlbumId);
-}
-
 function rrmdir($dir) {
     if (is_dir($dir)) {
         $objects = scandir($dir);
@@ -74,12 +21,6 @@ function rrmdir($dir) {
  * @param type $dir : Directory Path to store
  */
 function getfile($url, $dir) {
-    echo '<br/>Getting the file lisst and their data ->';
-    if (!isset($_SERVER['HTTP'])) {
-        $url = preg_replace("/^https:/", "http:", $url);
-    } else {
-        $url = preg_replace("/^http:/", "https:", $url);
-    }
     file_put_contents($dir . substr($url, strrpos($url, '/'), strlen($url)), file_get_contents($url));
 }
 
@@ -125,23 +66,75 @@ function zipDir($dir, $zip, $relative_path = DIRECTORY_SEPARATOR) {
  */
 function create_zip($files = array(), $destination = '', $overwrite = false) {
     //if the zip file already exists and overwrite is false, return false
-    $albumid = $_POST["id"];
+    $albumid = '336561909702445'; // $_GET["albumid"];
     if (file_exists($albumid)) {
         rrmdir($albumid);
     }
     mkdir($albumid);
     //if files were passed in...
     if (is_array($files)) {
-        echo 'file exists';
         //cycle through each file
         foreach ($files as $file) {
-            echo '<br/>The link/url is =' . $file['src_big'];
             //make sure the file exists
-            getfile($file['src'], $albumid);
+            getfile($file, $albumid);
         }
     }
     createZipFromDir($albumid, $albumid . ".zip");
     rrmdir($albumid);
 }
+$files = array('http://www.technobuffalo.com/wp-content/uploads/2012/12/Google-Apps.jpeg', 'http://blogs.independent.co.uk/wp-content/uploads/2012/12/google-zip.jpg', 'http://setandbma.files.wordpress.com/2013/01/google.png');
+echo 'zip file Created' . create_zip($files);
+header('location: zip.php');
+/* creates a compressed zip file */
+/*
+  function create_zip($files = array(), $destination = '', $overwrite = FALSE) {
+  //if the zip file already exists and overwrite is false, return false
+  if (file_exists($destination) && !$overwrite) {
+  return false;
+  }
+  //vars
+  $valid_files = array();
+  //if files were passed in...
+  if (is_array($files)) {
+  //cycle through each file
+  foreach ($files as $file) {
+  //make sure the file exists
+  if (curl_init($file)) {
+  //echo 'here I am';
+  $valid_files[] = $file;
+  }
+  }
+  }
+  //if we have good files...
+  if (count($valid_files)) {
+  //create the archive
+  $zip = new ZipArchive();
+  if ($zip->open($destination, $overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+  echo 'I am here<br/>';
+  return false;
+  }
+  //add the files
+  foreach ($valid_files as $file) {
+  /*if ('' == file_get_contents($file)) {
+  echo 'file is empty<br/>';
+  } else {
+  echo 'file is NOT empty<br/>';
+  } *//*
+  $zip->addFile($file);
+  }
+
+  //debug
+  echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status.'<br/>';
+  //close the zip -- done!
+  $zip->close();
+  echo is_file($destination);
+  //check to make sure the file exists
+  return file_exists($destination);
+  } else {
+  return false;
+  }
+  }
+
+  /* * *** Example Usage ** */
 
 ?>
