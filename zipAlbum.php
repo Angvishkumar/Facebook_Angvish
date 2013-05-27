@@ -13,7 +13,7 @@ function firstMethod() {
     if (!isset($downloadingAlbumId))
         die("No direct access allowed!");
     //echo $_GET['id'];
-    require 'facebookSourceSDK/facebook.php';
+    require 'lib/facebook.php';
     $facebook = new Facebook(array(
                 'appId' => '',
                 'secret' => '',

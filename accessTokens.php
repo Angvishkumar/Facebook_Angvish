@@ -17,7 +17,7 @@ if (!$_SESSION["accesstoken"]) {
 // 
 // 
 // getting the facebook sdk named facebook.php
-require_once("facebookSourceSDK/facebook.php");
+require_once("lib/facebook.php");
 // getting the application Id and secret key ..
 require_once("appId_secretKey.php");
 $config = array();
