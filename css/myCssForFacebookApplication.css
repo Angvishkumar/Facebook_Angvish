@@ -8,12 +8,7 @@
 
 root { 
     display: block;
-}
-body {
-    background-image: url('../img/texture.jpg');
-    background-repeat:repeat;
-}
-#userName{
+}#userName{
     font-family:Kristin ITC;
 }
 #pageLink{
@@ -24,7 +19,7 @@ body {
     height: 350px;
 }
 #loading,#loadingForDownload{
-    
+
     position:  fixed;
     z-index: 4;
 }

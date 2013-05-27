@@ -6,20 +6,30 @@
  */
 
 // A working function to download a particular image ..
-//$url = 'http://www.google.com/images/srpr/logo3w.png';
-
+// get the url of the image you want to download
 $url = $_GET['downloadImage'];
-if (!isset($_SERVER['HTTP'])) {
-    $url = preg_replace("/^https:/", "http:", $url);
-} else {
-    $url = preg_replace("/^http:/", "https:", $url);
-}
-//$url = 'http://www.google.com/images/srpr/logo3w.png';
-//$url = 'http://profile.ak.fbcdn.net/hprofile-ak-snc6/276519_104958162837_864712231_q.jpg';
 $file_name = basename($url);
 $file_url = dirname($url) . '/' . $file_name;
+$content = $url;
+
+$ch = curl_init($content);
+// the name of the image of the downloading photo
+$fp = fopen('facebook_Image.jpg', 'wb');
+curl_setopt($ch, CURLOPT_FILE, $fp);
+curl_setopt($ch, CURLOPT_HEADER, 0);
+curl_exec($ch);
+curl_close($ch);
+fclose($fp);
+
+// downloading the pic now
 header('Content-Type: application/octet-stream');
-header("Content-Transfer-Encoding: Binary");	
-header('Content-Disposition: attachment; filename="Facebook_albums.jpg"');
-readfile($file_url);
+header("Content-Transfer-Encoding: Binary");
+header("Content-disposition: attachment; filename=\"facebook_Image.jpg\"");
+readfile("facebook_Image.jpg");
+
+if (file_exists('facebook_Image.jpg')) {
+    // delete the photos when download downloading
+    unlink('facebook_Image.jpg');
+}
+exit;
 ?>
