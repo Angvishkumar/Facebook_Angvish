@@ -2,7 +2,13 @@
 
 session_start();
 $reponse = array();
-// here we set the session for the accesstoken 
+
+if (empty($access)) {
+    header("location: index");
+    die();
+}
+
+//set AccessToken in session
 if (isset($_POST["accesstoken"])) {
     $_SESSION["accesstoken"] = $_POST["accesstoken"];
     return json_encode($reponse);
@@ -14,12 +20,8 @@ if (!$_SESSION["accesstoken"]) {
 }
 
 // Initializing facebook sdk
-// 
-// 
-// getting the facebook sdk named facebook.php
-require_once("lib/facebook.php");
-// getting the application Id and secret key ..
-require_once("appId_secretKey.php");
+require_once("facebookSourceSDK/facebook.php"); // getting the facebook sdk named facebook.php
+require_once("appId_secretKey.php"); // getting the application Id and secret key ..
 $config = array();
 $config['appId'] = $facebookAppId;
 $config['secret'] = $facebookAppSecret;

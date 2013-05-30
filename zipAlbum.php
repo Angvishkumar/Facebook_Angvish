@@ -1,57 +1,63 @@
 <?php
 
-$downloadingAlbumId = ''; // id of a particular album
-$albumName = ''; // name of the particular album
-$access_token = ''; // accesstoken an alpha numeric sequence
+$access = 'my_value';
+if (empty($access)) {
+    header("Location: index");
+    die();
+}
+
+$downloadingAlbumId = '';
+$albumName = '';
+$access_token = '';
 firstMethod();
 
 function firstMethod() {
     $downloadingAlbumId = $_POST['id'];
     $albumName = $_POST['name'];
     $access_token = $_POST['access'];
-    // die if album id is not set
+
     if (!isset($downloadingAlbumId))
         die("No direct access allowed!");
     //echo $_GET['id'];
     require 'lib/facebook.php';
     $facebook = new Facebook(array(
-                'appId' => '',
-                'secret' => '',
+                'appId' => '188240594648676',
+                'secret' => '91058469a55393ba009979d81ccd9527',
                 'cookie' => true,
             ));
-    // get the user id
+    $params = array();
+    $params['fields'] = 'name,source,images';
+    $params = http_build_query($params, null, '&');
+
     $user_id = $facebook->getUser();
-    // set the accesstoken 
     $facebook->setAccessToken($access_token);
-    // an fql query to get the image from the facebook table
-    $fql = "SELECT src_big
-    FROM photo
-    WHERE aid in(select  aid from album where object_id=" . $downloadingAlbumId . ");";
-    // facebook api to call a fql query 
+    $fql = "SELECT pid,aid,src_big,src, link, owner
+                FROM photo
+                WHERE aid in
+                (select  aid 
+                from album 
+                where object_id=" . $downloadingAlbumId . ");";
     $album_photos = $facebook->api(array(
         'method' => 'fql.query',
         'query' => $fql,
             ));
-    // Photos for the corresponding album id are accessed with their name, source and photo itself
+// Photos for the corresponding album id are accessed with their name, source and photo itself
     $photos = array();
-    // don't proceed if the album photos are empty
+
     if (!empty($album_photos)) {
-        // get all the images from the particular album
         foreach ($album_photos as $photo) {
             $temp = array();
             $temp['src_big'] = $photo['src_big'];
             $photos[] = $temp;
         }
     }
-    // if the photos array is not empty
+
     if (!empty($photos)) {
-        // a function to creat the zip file in the root directory of the application
         create_zip($photos);
-        // after the downloading is done rename to the album name given by the user
         rename($_POST['id'] . '.zip', $_POST['name'] . ' Album Pics' . '.zip');
     }
 }
-// remake the directory with the same name if directory exist with
+
 function rrmdir($dir) {
     if (is_dir($dir)) {
         $objects = scandir($dir);
@@ -66,8 +72,15 @@ function rrmdir($dir) {
         rmdir($dir);
     }
 }
-// get the url of the image and store it in the dir directory of the applicaiton
+
+/**
+ * Download File Form URL 
+ * @param type $url : File Url to Download 
+ * @param type $dir : Directory Path to store
+ */
 function getfile($url, $dir) {
+    //echo '<br/>Getting the file lisst and their data ->';
+
     $ch = curl_init($url);
     $fp = fopen($dir . '/' . basename($url), 'wb');
     curl_setopt($ch, CURLOPT_FILE, $fp);
@@ -77,7 +90,14 @@ function getfile($url, $dir) {
     fclose($fp);
 }
 
-// create a compress file
+/* creates a compressed zip file */
+
+/**
+ *
+ * @param type $dir : Dir name to zip it
+ * @param type $zip_file  : Zip file name to save
+ * @return boolean|\ZipArchive 
+ */
 function createZipFromDir($dir, $zip_file) {
     $zip = new ZipArchive;
     if (true !== $zip->open($zip_file, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)) {
@@ -86,7 +106,7 @@ function createZipFromDir($dir, $zip_file) {
     zipDir($dir, $zip);
     return $zip;
 }
-// two paramerter tha is the dir and the zip of the particular album
+
 function zipDir($dir, $zip, $relative_path = DIRECTORY_SEPARATOR) {
     $dir = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     if ($handle = opendir($dir)) {
@@ -103,7 +123,13 @@ function zipDir($dir, $zip, $relative_path = DIRECTORY_SEPARATOR) {
     }
     closedir($handle);
 }
-// create a zip file provide the array with url of the photo is given
+
+/**
+ *
+ * @param type $files :  URL of files to zip
+ * @param type $destination : destination path to store that zip
+ * @param type $overwrite  : Booleand flag to overwrite file or not
+ */
 function create_zip($files = array(), $destination = '', $overwrite = false) {
     //if the zip file already exists and overwrite is false, return false
     $albumid = $_POST["id"];
