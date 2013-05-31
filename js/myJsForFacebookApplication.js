@@ -3,169 +3,172 @@
  * and open the template in the editor.
  */
 
-
 var accessToken='';
 var albumCounter=0;
 // this is a function which uses ajax to send some data and start the progress bar
-function downloadAlbum(album_id,name){
-    $('#loading').html('<img class="well" id="load" src="images/loading.gif">');//showing loading gif while facebook is sending photos
-    
+function downloadAlbum(album_id){
+    $('#loading').html('<img class="well" id="load" src="../images/loading.gif">');//showing loading gif while facebook is sending photos
+    $('#downloadbtn').html('');
     var accessTokenis='';
+    var albumName='';
     FB.getLoginStatus(function(response) {
         if (response.status === 'connected') {
             var uid = response.authResponse.userID;
             accessTokenis = response.authResponse.accessToken;
+            if (response.authResponse) {
+                token = response.authResponse.accessToken;
+                FB.api('/' + album_id, function(response) {
+                    albumName=response.name;
+                    if(accessTokenis==null || accessTokenis==''){
+                        window.location.href="../../";
+                    }
+                    else{
+                        $("body").css("overflow", "hidden");
+                        var id=album_id;
+                        var album_name=albumName;
+                        var key=this.albumCounter;
+                        var count=0.0;
+                        $('#loading').html('');
+                        setInterval(function() {
+                            if(count!=100.00){
+                                var loadingForDownload='<div id="close" class="alert alert-success">';
+                                loadingForDownload+='<div class="well well-small">';
+                                loadingForDownload+='<p><h3>-- <strong>'+album_name+' --</strong></h3>will be downloaded in a while, Please wait..</p></div>';
+                                loadingForDownload+='<div class="well well-small" id="showDownload"><div class="progress progress-striped active">';
+                                loadingForDownload+='<div class="bar" style="width: '+count+'%;"></div></div>';
+                                loadingForDownload+='<div class="">';
+                                loadingForDownload+='<strong> ( Building the zip - '+Math.floor(count)+' % Compeleted ) </strong>';
+                                loadingForDownload+='<button id="clickToDownload" name="filter" class="disabled btn btn-large" data-loading-text="Downloading..">';
+                                loadingForDownload+='Click to Download</button>';
+                                loadingForDownload+='</div></div>';
+                                $('#loadingForDownload').html(loadingForDownload).show(); //showing the loading image ..
+                                count=count+0.50;
+                            }
+                            $('#cancelDownload').click(function(){
+                                count=100.00;
+                                $('#loadingForDownload').html(''); //hiding the loading image ..
+                            }); 
+                        }, 100);
+                        $.ajax({ //Ajax call to download script to get the photos and zip them
+                            type: "POST",
+                            data: {
+                                id: album_id,
+                                name: album_name,
+                                access: accessTokenis
+                            },
+                            url: "../../zipAlbum.php",
+                            success: function(data){
+                                $('#resulted').html(data);
+                                count=100;
+                                var showDownload='<div class="progress progress-success progress-striped">';
+                                showDownload+='<div class="bar" style="width: 100%;"></div>';
+                                showDownload+='</div><div class="">';
+                                showDownload+='<strong> ( Building the zip- '+Math.floor(count)+' % Compeleted ) </strong>';
+                                showDownload+='<button id="clickToDownload" name="filter" class="btn btn-large btn-success" data-loading-text="Downloading..">';
+                                showDownload+='Click to Download</button>';
+                                showDownload+='<button id="cancelDownload" name="filter" class="btn btn-large" data-loading-text="Downloading..">';
+                                showDownload+='Cancel</button>';
+                                showDownload+='</div>'
+                                $('#showDownload').html(showDownload).show();
+                                $('#clickToDownload').click(function(){
+                                    $("body").css("overflow", "visible");
+                                    //On Completion of Zipping all the files, Request for headers to prompt user for download
+                                    window.location.href="../../downloadZip.php?id="+id+"&name="+album_name;      
+                                    $('#loadingForDownload').html('').hide(); //hiding the loading image ..
+                                    $('#downloadbtn').html('<button class="btn btn-inverse"\n\
+                                                                  onclick="downloadAlbum(albumidis)">\n\
+                                                                  Download This Album Again</button>');
+                                });                
+                                $('#cancelDownload').click(function(){
+                                    window.location.href="../../";
+                                }); 
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown){
+                                alert("Downloading files not found on server : 500 (Internal Server Error) ");
+                                $('#loadingForDownload').html('').hide(); //hiding the loading image ..
+                                return false;
+                            }
+                        });
+                    }
+                // do something here they are logged in and have given you perms   
+                });
+            } else {
+            // no user session available, someone you dont know
+            }
         } else if (response.status === 'not_authorized') {
-            window.location.href="./";
+            window.location.href="../../";
         } else {
-            window.location.href="./";
+            
+            if(accessTokenis==null || accessTokenis==""){
+                alert("It seems that you are not login. Please login to Download the Albums");
+                window.location.href="../../";
+            }
         }
     });
-    if(accessTokenis==null || accessTokenis==""){
-        alert("It seems that you are not login. Please login to downlaod the Photos");
-        window.location.href="./";
-    }
-    else{
-        $("body").css("overflow", "hidden");
-        var id=album_id;
-        var album_name=name;
-        var key=this.albumCounter;
-        var count=0.0;
-        $('#loading').html('');
-        setInterval(function() {
-            if(count!=100.00){
-                var loadingForDownload='<div id="close" class="alert alert-success">';
-                loadingForDownload+='<div class="well well-small">';
-                loadingForDownload+='<p><h3>-- <strong>'+album_name+' --</strong></h3>will be downloaded in a while, Please wait..</p></div>';
-                loadingForDownload+='<div class="well well-small" id="showDownload"><div class="progress progress-striped active">';
-                loadingForDownload+='<div class="bar" style="width: '+count+'%;"></div></div>';
-                loadingForDownload+='<div class="">';
-                loadingForDownload+='<strong> ( Building the zip - '+Math.floor(count)+' % Compeleted ) </strong>';
-                loadingForDownload+='<button id="clickToDownload" name="filter" class="disabled btn btn-large" data-loading-text="Downloading..">';
-                loadingForDownload+='Click to Download</button>';
-                loadingForDownload+='</div></div>';
-                $('#loadingForDownload').html(loadingForDownload).show(); //showing the loading image ..
-                count=count+0.50;
-            }
-            $('#cancelDownload').click(function(){
-                count=100.00;
-                $('#loadingForDownload').html(''); //hiding the loading image ..
-            }); 
-        }, 100);
-        $.ajax({ //Ajax call to download script to get the photos and zip them
-            type: "POST",
-            data: {
-                id: album_id,
-                name: album_name,
-                access: accessTokenis
-            },
-            url: "zipAlbum.php",
-            success: function(){
-                count=100;
-                var showDownload='<div class="progress progress-success progress-striped">';
-                showDownload+='<div class="bar" style="width: 100%;"></div>';
-                showDownload+='</div><div class="">';
-                showDownload+='<strong> ( Building the zip- '+Math.floor(count)+' % Compeleted ) </strong>';
-                showDownload+='<button id="clickToDownload" name="filter" class="btn btn-large btn-success" data-loading-text="Downloading..">';
-                showDownload+='Click to Download</button>';
-                showDownload+='<button id="cancelDownload" name="filter" class="btn btn-large" data-loading-text="Downloading..">';
-                showDownload+='Cancel</button>';
-                showDownload+='</div>'
-                $('#showDownload').html(showDownload).show();
-                $('#clickToDownload').click(function(){
-                    $("body").css("overflow", "visible");
-                    //On Completion of Zipping all the files, Request for headers to prompt user for download
-                    window.location.href="downloadZip.php?id="+id+"&name="+album_name;                    
-                    $('#loadingForDownload').delay(1000).slideUp("slow").html(''); //hiding the loading image ..
-                    for(var j=0;j< key;j++)
-                        $('#downloadThisAlbum'+j).show().animate({
-                            opacity: 1
-                        }, 1000).popover('enable');
-                });                
-                $('#cancelDownload').click(function(){
-                    $('#loadingForDownload').delay(1000).slideUp("slow").html(''); //hiding the loading image ..
-                    for(var j=0;j< key;j++)
-                        $('#downloadThisAlbum'+j).show().animate({
-                            opacity: 1
-                        }, 1000).popover('enable');
-                    window.location.href="./";
-                }); 
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown){
-                alert("It seems that you are not login. Please login to downlaod the Photos");
-                return false;
-            }
-        });
-    }
+    
 }// download albums ends
 
 //get all photos for an album and hide the album view
 function show_albums_photos(album_id) {
-    
     var accessTokenis='';
     FB.getLoginStatus(function(response) {
         if (response.status === 'connected') {
             var uid = response.authResponse.userID;
             accessTokenis = response.authResponse.accessToken;
         } else if (response.status === 'not_authorized') {
-            window.location.href="./";
+            window.location.href="../../";
         } else {
-            window.location.href="./";
+            window.location.href="../../";
         }
     });
     if(accessTokenis==null || accessTokenis==""){
-        alert("It seems that you are not login. Please login to start the slideshow");
-        window.location.href="./";
+        alert("It seems that you are not login. Please login to start the Slideshow");
+        window.location.href="../../";
     }
     else{
         FB.api('/' + album_id + '/photos', function(response) {
             var photosInsideAlbums='';
             $('#photoInsideAlbum').html(photosInsideAlbums);
-            photosInsideAlbums+='<div class="camera_wrap camera_azure_skin pattern_1" id="camera_wrap_4">';
+            photosInsideAlbums+='<div class="camera_wrap camera_black_skin pattern_1" id="camera_wrap_4">';
             $.each(response.data, function(key, value) {
-                console.log(response.data.length);
                 if(response.data.length==1){
                     // first image
                     photosInsideAlbums+='<div class="imageSize" data-portrait="'+value.picture+'" data-src="'+value.source+'" data-thumb="'+value.picture+'" >';
                     if(value.name==null){
                         photosInsideAlbums+='<div class="camera_caption fadeFromBottom">';
                         if(value.likes==null){
-                            photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - 0 ';
+                            photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> 0 ';
                         }
                         else{
-                            photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - '+value.likes.data.length+'';
+                            photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> '+value.likes.data.length+'';
                         }
                         if(value.comments==null){
-                            photosInsideAlbums+=' & Comments - <span class="badge badge-success">0</h6></span>';
+                            photosInsideAlbums+=' <i class="icon-edit icon-white"></i> 0';
                         }
                         else{
-                            photosInsideAlbums+=' & Comments - <span class="badge badge-success">'+value.comments.data.length+'</h6></span>';
+                            photosInsideAlbums+=' <i class="icon-edit icon-white"></i> '+value.comments.data.length+'';
                         }
                         photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbspNo tags found .. &nbsp&nbsp&nbsp&nbsp&nbsp';
                         photosInsideAlbums+='<a id="pageLink" href="'+value.link+'">Go To page</a>';
-                        photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp<div id="downloadImage" class="btn btn-info" value="DownLoad this Photo">';
-                        photosInsideAlbums+='<a href="downloadImage.php?downloadImage='+value.source+'" >DownLoad this Photo</a></div>';
                         photosInsideAlbums+='</div>';// camera fade from bottom ends ..
                     }
                     else
                     {
                         photosInsideAlbums+='<div class="camera_caption fadeFromBottom">';
                         if(value.likes==null){
-                            photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - 0 ';
+                            photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> 0 ';
                         }
                         else{
-                            photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - '+value.likes.data.length+'';
+                            photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> '+value.likes.data.length+'';
                         }
                         if(value.comments==null){
-                            photosInsideAlbums+=' & Comments - 0 </h6></span>';
+                            photosInsideAlbums+=' <i class="icon-edit icon-white"></i> 0 ';
                         }
                         else{
-                            photosInsideAlbums+=' & Comments - '+value.comments.data.length+'</h6></span>';
+                            photosInsideAlbums+=' <i class="icon-edit icon-white"></i> '+value.comments.data.length+'';
                         }
                         photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp'+value.name+'&nbsp&nbsp&nbsp&nbsp&nbsp';
                         photosInsideAlbums+='<a id="pageLink" href="'+value.link+'">Go To page</a>';
-                        photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp<div id="downloadImage" class="btn btn-info" value="DownLoad this Photo">';
-                        photosInsideAlbums+='<a href="downloadImage.php?downloadImage='+value.source+'">DownLoad this Photo</a></div>';
                         photosInsideAlbums+='</div>';// camera fade from bottom ends ..
                     }
                     photosInsideAlbums+='</div>';
@@ -174,42 +177,38 @@ function show_albums_photos(album_id) {
                     if(value.name==null){
                         photosInsideAlbums+='<div class="camera_caption fadeFromBottom">';
                         if(value.likes==null){
-                            photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - 0 ';
+                            photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> 0 ';
                         }
                         else{
-                            photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - '+value.likes.data.length+'';
+                            photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> '+value.likes.data.length+'';
                         }
                         if(value.comments==null){
-                            photosInsideAlbums+=' & Comments - <span class="badge badge-success">0</h6></span>';
+                            photosInsideAlbums+=' <i class="icon-edit icon-white"></i> 0';
                         }
                         else{
-                            photosInsideAlbums+=' & Comments - <span class="badge badge-success">'+value.comments.data.length+'</h6></span>';
+                            photosInsideAlbums+=' <i class="icon-edit icon-white"></i> '+value.comments.data.length+'';
                         }
                         photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbspNo tags found .. &nbsp&nbsp&nbsp&nbsp&nbsp';
                         photosInsideAlbums+='<a id="pageLink" href="'+value.link+'">Go To page</a>';
-                        photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp<div id="downloadImage" class="btn btn-info" value="DownLoad this Photo">';
-                        photosInsideAlbums+='<a href="downloadImage.php?downloadImage='+value.source+'" >DownLoad this Photo</a></div>';
                         photosInsideAlbums+='</div>';// camera fade from bottom ends ..
                     }
                     else
                     {
                         photosInsideAlbums+='<div class="camera_caption fadeFromBottom">';
                         if(value.likes==null){
-                            photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - 0 ';
+                            photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> 0 ';
                         }
                         else{
-                            photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - '+value.likes.data.length+'';
+                            photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> '+value.likes.data.length+'';
                         }
                         if(value.comments==null){
-                            photosInsideAlbums+=' & Comments - 0 </h6></span>';
+                            photosInsideAlbums+=' <i class="icon-edit icon-white"></i> 0 ';
                         }
                         else{
-                            photosInsideAlbums+=' & Comments - '+value.comments.data.length+'</h6></span>';
+                            photosInsideAlbums+=' <i class="icon-edit icon-white"></i> '+value.comments.data.length+'';
                         }
                         photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp'+value.name+'&nbsp&nbsp&nbsp&nbsp&nbsp';
                         photosInsideAlbums+='<a id="pageLink" href="'+value.link+'">Go To page</a>';
-                        photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp<div id="downloadImage" class="btn btn-info" value="DownLoad this Photo">';
-                        photosInsideAlbums+='<a href="downloadImage.php?downloadImage='+value.source+'">DownLoad this Photo</a></div>';
                         photosInsideAlbums+='</div>';// camera fade from bottom ends ..
                     }
                     photosInsideAlbums+='</div>';
@@ -220,42 +219,38 @@ function show_albums_photos(album_id) {
                 if(value.name==null){
                     photosInsideAlbums+='<div class="camera_caption fadeFromBottom">';
                     if(value.likes==null){
-                        photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - 0 ';
+                        photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> 0 ';
                     }
                     else{
-                        photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - '+value.likes.data.length+'';
+                        photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> '+value.likes.data.length+'';
                     }
                     if(value.comments==null){
-                        photosInsideAlbums+=' & Comments - <span class="badge badge-success">0</h6></span>';
+                        photosInsideAlbums+=' <i class="icon-edit icon-white"></i> 0';
                     }
                     else{
-                        photosInsideAlbums+=' & Comments - <span class="badge badge-success">'+value.comments.data.length+'</h6></span>';
+                        photosInsideAlbums+=' <i class="icon-edit icon-white"></i> '+value.comments.data.length+'';
                     }
                     photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbspNo tags found .. &nbsp&nbsp&nbsp&nbsp&nbsp';
                     photosInsideAlbums+='<a id="pageLink" href="'+value.link+'">Go To page</a>';
-                    photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp<div id="downloadImage" class="btn btn-info" value="DownLoad this Photo">';
-                    photosInsideAlbums+='<a href="downloadImage.php?downloadImage='+value.source+'" >DownLoad this Photo</a></div>';
                     photosInsideAlbums+='</div>';// camera fade from bottom ends ..
                 }
                 else
                 {
                     photosInsideAlbums+='<div class="camera_caption fadeFromBottom">';
                     if(value.likes==null){
-                        photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - 0 ';
+                        photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> 0 ';
                     }
                     else{
-                        photosInsideAlbums+='<span class="badge badge-success"><h6>Likes - '+value.likes.data.length+'';
+                        photosInsideAlbums+='<i class="icon-thumbs-up icon-white"></i> '+value.likes.data.length+'';
                     }
                     if(value.comments==null){
-                        photosInsideAlbums+=' & Comments - 0 </h6></span>';
+                        photosInsideAlbums+=' <i class="icon-edit icon-white"></i> 0 ';
                     }
                     else{
-                        photosInsideAlbums+=' & Comments - '+value.comments.data.length+'</h6></span>';
+                        photosInsideAlbums+=' <i class="icon-edit icon-white"></i> '+value.comments.data.length+'';
                     }
                     photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp'+value.name+'&nbsp&nbsp&nbsp&nbsp&nbsp';
                     photosInsideAlbums+='<a id="pageLink" href="'+value.link+'">Go To page</a>';
-                    photosInsideAlbums+='&nbsp&nbsp&nbsp&nbsp&nbsp<div id="downloadImage" class="btn btn-info" value="DownLoad this Photo">';
-                    photosInsideAlbums+='<a href="downloadImage.php?downloadImage='+value.source+'">DownLoad this Photo</a></div>';
                     photosInsideAlbums+='</div>';// camera fade from bottom ends ..
                 }
                 photosInsideAlbums+='</div>';
@@ -267,18 +262,23 @@ function show_albums_photos(album_id) {
             jQuery(function(){
                 jQuery('#camera_wrap_4').camera({
                     height: 'auto',
+                    loader: 'bar',
                     pagination: false,
                     thumbnails: false,
                     hover: false,
                     opacityOnGrid: false,
                     fx: 'random',
                     transPeriod: 0,
+                    time: 7000,
+                    loaderOpacity: .5,
+                    loaderPadding: 2,
+                    loaderStroke: 10,
+                    pieDiameter: 75,
                     imagePath: 'https://fbcdn-photos-g-a.akamaihd.net/'
                 });
             });
             
             $('#mainLabel').hide();
-            $('#clickToDisconnect').html('');// hiding the logout button
             $('#containgAlbumCover').hide();// hiding the list of albums
             $('.fluid_container').show();
             $('#back').html('<img id="backAndDownloadButton" class="img-circle img-poloroid" src="images/back.jpg"></img>');
@@ -293,26 +293,6 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
         $('#logoutMsg').html('');
         $("#loginMsg").click(function(){
             $("#loginMsg").delay(4000).slideUp('fast');
-        });
-        // click here to connect popover
-        $("#clickToConnect").popover({
-            title: '<b>Login</b>', 
-            content: '<img class="img-rounded" src="images/popoverlogin.jpg" />', 
-            placement: 'bottom',
-            html:true
-        });        // click to disconnect popover
-        $("#clickToDisconnect").popover({
-            title: '<b>Logout</b>', 
-            content: '<img class="img-rounded" src="images/popoverlogout.jpg" />', 
-            placement: 'bottom',
-            html:true
-        });
-        // click to disconnect popover
-        $("#backAndDownloadButton").popover({
-            title: '<b>Back to Album</b>', 
-            content: '<img class="img-rounded" src="images/album.jpg" />', 
-            placement: 'right',
-            html:true
         });
     
         var facebookAuthorizationResponse;
@@ -347,12 +327,13 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
                 if (response.status === 'connected') {
                     var uid = response.authResponse.userID;
                     accessToken = response.authResponse.accessToken;
+                    $('#connectWithIt').html('');
                     ifConnected(response.name);
                 } else if (response.status === 'not_authorized') {// the user is logged in to Facebook, 
                     alert("Not Authorised");// but has not authenticated your app
                 } else {
                     // the user isn't logged in to Facebook.
-                    $('#connectWithIt').html('<div id="clickToConnect" ><img rel="popover" data-content="Click to Login" data-original-title="Login" id="facebookLoginButton" src="images/connect.jpg"/></div>');
+                    $('#connectWithIt').html('<i class="icon-user icon-white"></i> Login');
                 }
             });
         });
@@ -389,14 +370,15 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
                         <strong>Sucessfull !!</strong>\n\
                          Congratulation you have successfully Logged IN into the system.</div>').delay(4000).slideUp('fast');
             //Get User Name
-            var displayNameAndImage='';
+            var displayNameAndImage='',displayImg='';
             FB.api('/me?fields=picture,name',function(respo){
-                displayNameAndImage+='<h3 class="well well-small" id="displayUserName"><a href="https://www.facebook.com/">';
-                displayNameAndImage+='<span class="label label-info"><img class="img-circle img-polaroid" src="'+respo.picture.data.url+'"></img></span>';
-                displayNameAndImage+='<strong id="namePopup"> '+respo.name+"</strong></a></h3>";
+                displayImg+='<a href="https://www.facebook.com/"><img class="media-object" data-src="holder.js/64x64" alt="64x64"';
+                displayImg+='style="width: 25px; height: 25px;" src="'+respo.picture.data.url+'"></img></a>';
+                displayNameAndImage+='<a href="http://albumdownloader.funpic.org"><i class="icon-share-alt icon-white"></i> '+respo.name+"</a>";
+                $("#displayImg").html(displayImg).show();// display the current user name ..
                 $("#displayName").html(displayNameAndImage).show();// display the current user name ..
             });
-            $("#clickToConnect").hide();// hidding the facebook button ..
+            $("#clickToConnect").html('');// hidding the facebook button ..
             //show all ablums of user ..
             FB.api('/me/albums', showAlbums);
         }
@@ -419,23 +401,24 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
             
                 albumHtmlAppend+='<p id="pageLink">';
                 albumHtmlAppend+='<i id="downloadThisAlbum'+key+'" class="downloadThisAlbum">';
-                albumHtmlAppend+=' <span class="label label-info"><i class="icon-download-alt"></i> Download ';
+                albumHtmlAppend+='<button class="btn btn-inverse" type="button">';
+                albumHtmlAppend+='<i class="icon-download-alt icon-white"></i> Download - ';
                 if(value.count==1)
-                    albumHtmlAppend+='<span class="badge badge-inverse">' + value.count + '</span> Image</span></p>';// number of images in the album ..    
+                    albumHtmlAppend+='' + value.count + ' Photos </button></p>';// number of images in the album ..    
                 else{
                     if(value.name=='Mobile Uploads'){
                         var count=0;
                         count=value.count-1;
-                        albumHtmlAppend+='<span class="badge badge-inverse">' + count + '</span> Image</span></p>';// number of images in the album ..
+                        albumHtmlAppend+='' + count + ' Photo</button></p>';// number of images in the album ..
                     }
                     else
-                        albumHtmlAppend+='<span class="badge badge-inverse">' + value.count + '</span> Images</span></p>';// number of images in the album ..
+                        albumHtmlAppend+='' + value.count + ' Photos </button></p>';// number of images in the album ..
                 }
                 albumHtmlAppend+='</i>';
-                albumHtmlAppend+='<li class="span3">';
+                albumHtmlAppend+='<li class="">';
                 albumHtmlAppend+='<div class="thumbnail">';//div thumbnail
                 albumHtmlAppend+='<a href="#" class="thumbnail albumCoverPhotolink' + key + '">';//cover image
-                albumHtmlAppend+='<img id="coverphoto' + key + '" data-src="holder.js/260x180" alt="" src="images/loading.gif" />';
+                albumHtmlAppend+='<img id="coverphoto' + key + '" style="height:160px" src="images/loading.gif" />';
                 albumHtmlAppend+='</a>';// coverimage ends
                 albumHtmlAppend+='<div class="caption">';
                 // name of the album ..
@@ -443,36 +426,36 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
                 var length = 20;  // set to the number of characters you want to keep
                 var pathname = value.name;
                 var trimmedPathname = pathname.substring(0, Math.min(length,pathname.length));
-                if(trimmedPathname!=value.name)
-                    albumHtmlAppend+='<h6>' + trimmedPathname + ' ..</h6>';// dot appended
-                else
-                    albumHtmlAppend+='<h6>' + trimmedPathname + '</h6>';// no dot appended
-                albumHtmlAppend+='</a>';
-                // end of the name of the album
-                // 
-                // privacy likes and comments starts
-                albumHtmlAppend+='<table align="center">';
-                albumHtmlAppend+='<tr><h6><td>Privacy - </td>';
                 var Privacy=value.privacy;
                 // privacy status
                 if(Privacy=="everyone")
-                    albumHtmlAppend+='<td><span class="badge badge-warning"> ' + Privacy.charAt(0).toUpperCase() + Privacy.slice(1) +' </span></h6></p></tr>';
+                    albumHtmlAppend+='<tr><td><i class="icon-eye-open"></i>';
                 else
-                    albumHtmlAppend+='<td><span class="badge badge-success"> ' + Privacy.charAt(0).toUpperCase() + Privacy.slice(1) +' </span></h6></p></tr>';
+                    albumHtmlAppend+='<tr><td><i class="icon-eye-close"></i>';
+                
+                if(trimmedPathname!=value.name)
+                    albumHtmlAppend+='<i id="photoName"> ' + trimmedPathname + ' ..</i></tr>';// dot appended
+                else
+                    albumHtmlAppend+='<i id="photoName"> ' + trimmedPathname + '</i></tr>';// no dot appended
+                albumHtmlAppend+='</a>';
+                // end of the name of the album
+                // 
+                // likes and comments starts
+                albumHtmlAppend+='<table align="center">';
                 
                 // number of likes 
                 if(value.likes==null){
-                    albumHtmlAppend+='<tr><p><h6><td>Likes - </td><td><span class="badge badge-success"> 0</span></td></h6></tr>';
+                    albumHtmlAppend+='<tr><td><i class="icon-thumbs-up"></i></td><td><span class="badge badge-inverse"> 0 </span>';
                 }
                 else{
-                    albumHtmlAppend+='<tr><p><h6><td>Likes - </td><td><span class="badge badge-success"> '+value.likes.data.length+'</span></td></h6></tr>';
+                    albumHtmlAppend+='<tr><td><i class="icon-thumbs-up"></i></td><td><span class="badge badge-inverse"> '+value.likes.data.length+' </span>';
                 }
                 // number of comments
                 if(value.comments==null){
-                    albumHtmlAppend+='<tr><h6><td>Comments - </td><td><span class="badge badge-success"> 0</span></td></h6></p></tr>';
+                    albumHtmlAppend+=' <i class="icon-edit"></i></td><td><span class="badge badge-inverse"> 0</span></td></tr>';
                 }
                 else{
-                    albumHtmlAppend+='<tr><h6><td>Comments - </td><td><span class="badge badge-success"> '+value.comments.data.length+'</span></td></h6></p></tr>';
+                    albumHtmlAppend+=' <i class="icon-edit"></i></td><td><span class="badge badge-inverse"> '+value.comments.data.length+'</span></td></tr>';
                 }
                 // privacy likes and commenst ends
                 albumHtmlAppend+='</div>';// end thumbnail
@@ -481,7 +464,7 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
                 albumHtmlAppend+='</div>';
                 $('#userAlbums').append(albumHtmlAppend);
                 $('#loading').html('');
-                $('#clickToDisconnect').html('<img id="facebookLogoutButton" class="img-circle img-polaroid" src="images/logout.jpg"></img>');//show the logout button ..
+                $('#clickToDisconnect').html('<i class="icon-off icon-white"></i> Logout');//show the logout button ..
                 $('#clickToDisconnect').show().animate({
                     opacity: 1
                 }, 1000).popover('enable');
@@ -506,7 +489,7 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
                 $('.albumCoverPhotolink' + key).click(function(event) {
                     event.preventDefault();
                     //show_albums_photos(value.id);
-                    window.location.href=value.id;
+                    window.location.href="album/view/"+value.id;
                 });
                 // download this album when user clicks it ..
                 $('#downloadThisAlbum' + key).click(function(event) {
@@ -516,7 +499,7 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
                     nameis=nameis.replace("(","_");
                     nameis=nameis.replace(")","_");
                     nameis=nameis.replace(/ /g,"_");
-                    window.location.href=value.id+"/"+nameis;
+                    window.location.href="albums/download/"+value.id;
                 });
             });
         }
@@ -527,8 +510,8 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
                 $('#loginMsg').hide('slow');
                 $('#loadingForDownload').hide();
                 $('#displayName').hide();
-                $('#connectWithIt').html('<div id="clickToConnect" ><img rel="popover" data-content="Click to Login" data-original-title="Login" id="facebookLoginButton" src="images/connect.jpg"/></div>');
-                $('#clickToDisconnect').html('');
+                $('#connectWithIt').html('<i class="icon-user icon-white"></i> Login');
+                $('#clickToDisconnect').html('Logout');
                 $('#clickToDisconnect').hide().animate({
                     opacity: 0
                 }, 1000).popover('disable');
