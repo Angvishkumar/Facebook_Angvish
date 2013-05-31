@@ -9,21 +9,43 @@
 root { 
     display: block;
 }
+@media (min-width: 981px) {
+   body {
+     padding-top: 60px;
+   }
+}
 body
 {
-    background-color: #00000C;
+    background: url(../images/texture.jpg);
+    background-repeat: repeat;
+}
+.thumbnail{
+    
 }
 ul,li
 {
     list-style-type: none;
 }
-.caption{
-    background-color: #99CCDD;
+a{
+    text-decoration : none;
+    color : #C0C0C0;
 }
-#loading,#loadingForDownload{
-
+a:hover{
+    text-decoration : none;
+    color : #C0C0C0;
+}
+.caption{
+    background: url(../images/linkBack.jpg);
+    background-repeat: repeat;
+}
+#downloadbtn{
+    margin-top: 5%;
+}
+#loading{
+    top:30%;
+    left: 30%;
     position:  fixed;
-    z-index: 4;
+    z-index: 1;
 }
 #load{
     -o-border-radius: 5px 5px 5px 5px;
@@ -102,8 +124,14 @@ ul,li
     -o-border-radius: 5px;
     -webkit-border-radius: 10px;
 }
-.span4{
-    height: 400px;
+#photoName{
+    color: #000000;
+}
+#photoName:hover{
+    color: #000000;
+}
+.span3{
+    margin: 5%;
 }
 .imgcover:hover{
     border:10px solid #9DACCC;
@@ -118,37 +146,6 @@ a:hover{
 p{
     color: white;
 }
-#clickToConnect{
-    width:200px;
-    height:42px;
-    padding: 10px;
-    margin: 5px;
-    color: white;
-    font-weight: bold;
-    background-color: #3b5999;
-    cursor: pointer;
-
-    -webkit-border-radius: 10px 10px 10px 10px;
-    -moz-border-radius: 10px 10px 10px 10px;
-
-    -webkit-box-shadow: 0px 2px 0px white;
-    -moz-box-shadow: 0px 2px 0px white;
-
-    -webkit-transition:-webkit-transform 0.25s, opacity 0.25s, background 0.25s, width 0.25s, height 0.25s;
-    -moz-transition:-moz-transform 0.25s, opacity 0.25s, background 0.25s, width 0.25s, height 0.25s;
-    z-index: -1;
-}
-#clickToConnect:hover{
-    z-index: -1;
-    width:250px;
-    height:52px;
-    color:black;
-    cursor: pointer;
-    font-weight: bold;
-    background: #9DACCC;
-    -webkit-border-radius: 10px 10px 10px 10px;
-    -moz-border-radius: 10px 10px 10px 10px;
-}
 #back{
     float:left;
     cursor: pointer;
@@ -159,12 +156,7 @@ p{
     float:left;
 }
 #clickToDisconnect{
-    margin: 0.5%;
-    top: 1%;
-    right: 1%;
     cursor: pointer;
-    z-index: 2;
-    position: fixed;
 }
 #namelink a{
     text-decoration: none;
@@ -175,9 +167,9 @@ p{
     font-weight: bold;
 }
 #mainLabel{
-    margin: 0.5%;
-    padding: 0.5%;
+    margin-top: 0.1%;
     font-weight: bold;
+    position: fixed;
 }
 #mainLabel:hover{
     cursor: alias;
@@ -204,40 +196,7 @@ p{
     -webkit-border-radius: 10px 10px 10px 10px;
     -moz-border-radius: 10px 10px 10px 10px;
 }
-h2{
-    color:white;
-    font-size: 14px;
-}
-h2:hover{
-    color:#9DACCC;
-    font-size: 14px;
-    text-decoration: none;
-}
-#logout{
-    color: white;
-    opacity: 0;
-    padding: 5px;
-    margin: 25px;
-    position:fixed;
-    width:115px;
-    height:50px;
 
-    float:right;
-    text-align: center;
-    text-shadow: 2px 2px black;
-    font-weight: bolder;
-    background-color: #3b5999;
-
-    -o-transform: rotate(-15deg);
-    -webkit-transform: rotate(-15deg);
-    -moz-transform: rotate(-15deg);
-
-    -webkit-border-radius: 10px 10px 10px 10px;
-    -moz-border-radius: 10px 10px 10px 10px;
-}
-#logout:hover{
-    background-color: #9DACCC;
-}
 #logoutSuccess,#loginSuccess{
     opacity: 0;
     color: white;

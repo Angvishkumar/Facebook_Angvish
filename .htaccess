@@ -1,25 +1,14 @@
 # 1 ---- Establish a custom 404 File not Found page ----
-ErrorDocument 404 /filenotfound.php
+#ErrorDocument 404 /filenotfound.php
 
 # 2 ---- Prevent directory file listing in all of your folders ----
 #IndexIgnore *
 # 3 ---- Make pages render without their extension in the url
 #Options +MultiViews
 
-Options +FollowSymLinks
 # Turn mod_rewrite on
 RewriteEngine On
-RewriteBase /facebookHtaccess/
 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^album/view/([0-9]+)$ /slideshow.php?albumid=$1 [L]
 
-#RewriteRule (.*)_ slideshow.php?albumid=$1
-RewriteRule ^([a-zA-z0-9]+)$ slideshow.php?albumid=$1
-
-RewriteRule ^([a-zA-z0-9]+)/([a-zA-z0-9]+)$ download.php?albumid=$1&name=$2 
-
-#RewriteRule (.*)(.*)_ download.php?id=$1&name=$2
-<IfModule mode_rewrite.c>
-#RewriteRule ^([a-zA-z0-9]+)/([a-zA-z0-9]+)$ download.php?albumid=$1&name=$2 
-</IfModule>
+RewriteRule ^albums/download/([a-zA-z0-9]+)$ /download.php?albumid=$1 [L]

@@ -18,11 +18,11 @@ function firstMethod() {
 
     if (!isset($downloadingAlbumId))
         die("No direct access allowed!");
-    //echo $_GET['id'];
-    require 'lib/facebook.php';
+    //echo $_POST['id'];
+    require_once("lib/facebook.php");
     $facebook = new Facebook(array(
-                'appId' => '188240594648676',
-                'secret' => '91058469a55393ba009979d81ccd9527',
+                'appId' => '', //facebook app Id ..
+                'secret' => '',// facebook app secret key ..
                 'cookie' => true,
             ));
     $params = array();
@@ -37,6 +37,7 @@ function firstMethod() {
                 (select  aid 
                 from album 
                 where object_id=" . $downloadingAlbumId . ");";
+    //echo $fql;
     $album_photos = $facebook->api(array(
         'method' => 'fql.query',
         'query' => $fql,
@@ -51,7 +52,7 @@ function firstMethod() {
             $photos[] = $temp;
         }
     }
-
+    //print_r($photos);
     if (!empty($photos)) {
         create_zip($photos);
         rename($_POST['id'] . '.zip', $_POST['name'] . ' Album Pics' . '.zip');
