@@ -374,7 +374,7 @@ $(window).load(function(){// UPON LOADING THE ENTIRE WINDOW
             FB.api('/me?fields=picture,name',function(respo){
                 displayImg+='<a href="https://www.facebook.com/"><img class="media-object" data-src="holder.js/64x64" alt="64x64"';
                 displayImg+='style="width: 25px; height: 25px;" src="'+respo.picture.data.url+'"></img></a>';
-                displayNameAndImage+='<a href="http://albumdownloader.funpic.org"><i class="icon-share-alt icon-white"></i> '+respo.name+"</a>";
+                displayNameAndImage+='<a href="http://album.com"><i class="icon-share-alt icon-white"></i> '+respo.name+"</a>";
                 $("#displayImg").html(displayImg).show();// display the current user name ..
                 $("#displayName").html(displayNameAndImage).show();// display the current user name ..
             });

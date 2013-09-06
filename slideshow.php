@@ -71,7 +71,7 @@
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li class="active">
-                                <a href="http://albumdownloader.funpic.org">Home</a>
+                                <a href="http://album.com">Home</a>
                             </li>
                             <li id="displayImg" class="">
                             </li>
